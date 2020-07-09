@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title>社員情報管理ページ</title>
+    <style>
+        section {
+            margin-bottom: 20px;
+            border-top: solid 1px;
+        }
+
+        table {
+            width: 300px;
+            border-collapse: collapse;
+        }
+
+        table, tr, th, td {
+            border: solid 1px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        caption {
+            text-align: left;
+        }
+
+        .text_align_right {
+            text-align: right;
+        }
+
+        .drink_name_width {
+            width: 100px;
+        }
+
+        .input_text_width {
+            width: 60px;
+        }
+    </style>
+</head>
+
+<body>
+    <dev>
+        <table>
+            <caption>社員一覧</caption>
+            <tr style="background-color: lightblue;">
+                <th>社員ID</th>
+                <th>名前</th>
+            </tr>
+
+            {% for data in emp %}
+            <tr>                
+                <form method="POST" action="">
+                    <td>{{ data.emp_id }}</td>
+                    <td>{{ data.name }}</td>
+                
+                    <td>
+                        <button type="submit" name="edit" value="{{data.id}}">編集</button>
+                    </td>
+                </form>
+
+                <form method="POST" action="">
+                    <td>
+                        <button type="submit" name="delete" value="{{data.id}}">削除</button>    
+                    </td>
+                </form>
+            </tr>
+            {% endfor %}
+        </table>
+    </dev>
+
+    <!--社員の追加-->
+    <dev>
+        <form method="POST" action="emp_edit">
+            <p><button type="submit" name="edit" value="">新規追加</button></p>
+        </form>
+    </dev>
+
+    <!--社員の検索-->
+    <dev>
+        <form method="POST" action="emp_search.html">
+            <p><button type="submit" name="search" value="">社員検索</button></p>
+        </form>
+    </dev>
+
+    <!--csvに出力-->
+    <dev>
+        <form method="POST" action="emp_search.html">
+            <p><button type="submit" name="csv" value="">CSVファイルに出力</button></p>
+        </form>
+    </dev>
+
+</body>
+</html>
