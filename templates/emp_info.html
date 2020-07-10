@@ -41,12 +41,13 @@
 <body>
     <dev>
         <table>
+            {% if emp %}
             <caption>社員一覧</caption>
             <tr style="background-color: lightblue;">
                 <th>社員ID</th>
                 <th>名前</th>
             </tr>
-
+            
             {% for data in emp %}
             <tr>                
                 <form method="POST" action="">
@@ -65,6 +66,7 @@
                 </form>
             </tr>
             {% endfor %}
+
         </table>
     </dev>
 
@@ -77,17 +79,36 @@
 
     <!--社員の検索-->
     <dev>
-        <form method="POST" action="emp_search.html">
+        <form method="POST" action="emp_search">
             <p><button type="submit" name="search" value="">社員検索</button></p>
         </form>
     </dev>
 
     <!--csvに出力-->
     <dev>
-        <form method="POST" action="emp_search.html">
+        <form method="POST" action="">
             <p><button type="submit" name="csv" value="">CSVファイルに出力</button></p>
         </form>
     </dev>
+
+    {% else %}
+    <p>社員一覧</p>
+    登録されている社員がいません。
+
+    <!--社員の追加-->
+    <dev>
+        <form method="POST" action="emp_edit">
+            <p><button type="submit" name="edit" value="">新規追加</button></p>
+        </form>
+    </dev>
+
+    <!--社員の検索-->
+    <dev>
+        <form method="POST" action="emp_search">
+            <p><button type="submit" name="search" value="">社員検索</button></p>
+        </form>
+    </dev>
+    {% endif %}
 
 </body>
 </html>

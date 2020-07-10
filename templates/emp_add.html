@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
-    <title>社員データの追加・修正</title>
+    <title>社員データの追加</title>
 </head>
 
 <body>
@@ -17,12 +17,15 @@
             <p>性別：<input type="radio" name="gender" value="男" {{'checked' if gender == '男'}}>男
             <input type="radio" name="gender" value="女" {{'checked' if gender == '女'}}>女 </p>
             <p>写真：</p>
-            <p><input type="file" name="new_img" accept="image/jpeg,image/png"></p>
-            <div>※アップロード可能なファイル形式は「JPEG」「PNG」のみ</div>
+            {% if img_url %}
+            <p><img src="{{ image_path }}" height="150"></p>
+            {% endif %}
+            <p><input type="file" name="new_img" accept="image/jpeg,image/png"><br>
+                ※アップロード可能なファイル形式は「JPEG」「PNG」のみ</p>
 
-            <p>郵便番号：<input type="text" name="postal_code" value=""></p>
-            <div>※ハイフンを入れて入力してください。（例）100-1000</div>
-
+            <p>郵便番号：<input type="text" name="postal_code" value=""><br
+                >※ハイフンを入れて入力してください。（例）100-1000</p>
+            
             <p>都道府県：
                 <select name="pref">
                     <option value="" selected>選択してください</option>
@@ -76,15 +79,22 @@
                 </select>
             </p>
 
-            <p>住所：<input type="text" name="address" value=""></p>
-            <dev>※市区町村以下を記入してください。</dev>
+            <p>住所：<input type="text" name="address" value=""><br>
+                ※市区町村以下を記入してください。</p>
 
             <p>所属：
                 <select name="department">
-                    <option></option>
+                    <option value="" selected>未指定</option>
                 </select>
             </p>
 
+            <p>入社日：<input type="text" name="join_date" value=""><br>
+                ※YYYY/MM/DDの形で記入してください</p>
+
+            <p>退社日：<input type="text" name="leave_date" value=""><br>
+                ※YYYY/MM/DDの形で記入してください</p>
+
             <div><input type="submit" name="set" value="設定"></div>
+            <div><input type="submit" name="cancel" value="キャンセル"></div>
         </form>
     </section>

@@ -47,18 +47,20 @@
                 <th>部署名</th>
             </tr>
 
-            {% for data in emp %}
+            {% for belongs in departments %}
             <tr>                
-                <form method="POST" action="">
-                    <td>{{ data.department_id }}</td>
-                    <td>{{ data.department }}</td>
-                
-                    <td>
-                        <button type="submit" name="edit" value="{{data.id}}">編集</button>
-                    </td>
+                <td>{{ belongs.department_id }}</td>
+                <td>{{ belongs.department }}</td>
 
+                <form method="POST" action="de_edit">
                     <td>
-                        <button type="submit" name="delete" value="{{data.id}}">削除</button>    
+                        <button type="submit" name="de_edit" value="{{belongs.department_id}}">編集</button>
+                    </td>
+                </form>
+
+                <form method="POST" action="de_delete">
+                    <td>
+                        <button type="submit" name="de_delete" value="{{belongs.department_id}}">削除</button>    
                     </td>
                 </form>
             </tr>
@@ -66,10 +68,10 @@
         </table>
     </dev>
 
-    <!--社員の追加-->
+    <!--部署の追加-->
     <dev>
-        <form method="POST" action="emp_edit">
-            <p><button type="submit" name="edit" value="">新規追加</button></p>
+        <form method="POST" action="de_edit">
+            <p><button type="submit" name="de_add" value="">新規追加</button></p>
         </form>
     </dev>
 
