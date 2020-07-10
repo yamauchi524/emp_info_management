@@ -19,10 +19,11 @@ CREATE TABLE emp(
     gender VARCHAR(255),
     image_id VARCHAR(255), 
     postal_code INT(7) UNSIGNED,
+    pref VARCHAR(100),
     address VARCHAR(255),
     department_id VARCHAR(255),
-    join_date DATETIME,
-    leave_date DATETIME,
+    join_date DATE,
+    leave_date DATE,
     register_date DATETIME DEFAULT CURRENT_TIMESTAMP, 
     update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(id)
