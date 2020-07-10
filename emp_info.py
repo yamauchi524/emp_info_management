@@ -56,21 +56,21 @@ def printError(err):
 #社員情報の取得
 def get_emp_info(cursor):
     emp = []
-    for (drink_id, image, name, price, stock, status) in cursor:
-        data = {"drink_id":drink_id, "image":sql_image, "name":name, "price":price, "stock":stock, "status":status}
+    for (emp_id, name, age, gender, image_id, postal_code, address, department_id) in cursor:
+        data = {"emp_id":emp_id, "name":name, "age":age, "gender":gender, "image_id":image_id, "postal_code":postal_code, "address":address, "department_id":department_id}
         emp.append(data)
     return emp
 
 
 
 
-#社員情報
+#社員情報一覧
 @app.route('/emp_info', methods=['GET','POST'])
 def emp_info():
     try:
         cnx, cursor = connect_db()
 
-        query = 'SELECT drink.drink_id, drink.image, drink.name, drink.price, stock.stock, drink.status FROM drink LEFT JOIN stock ON drink.drink_id = stock.drink_id;'
+        query = 'SELECT emp_id, name, age, gender, image_id, postal_code, address, department_id FROM emp;'
         cursor.execute(query)
 
         emp = get_emp_info(cursor)
@@ -86,9 +86,19 @@ def emp_info():
 def emp_search():
     return render_template("emp_search.html")
 
+#社員情報削除
+@app.route('/emp_edit', methods=['GET','POST'])
+def emp_delete():
+    return render_template("emp_info.html")
+
 #社員情報編集
 @app.route('/emp_edit', methods=['GET','POST'])
 def emp_edit():
+    return render_template("emp_edit.html")
+
+#社員情報追加
+@app.route('/emp_edit', methods=['GET','POST'])
+def emp_add():
     return render_template("emp_edit.html")
 
 #社員情報編集結果
