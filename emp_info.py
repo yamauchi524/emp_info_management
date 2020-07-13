@@ -86,8 +86,13 @@ def get_department_info(cursor):
         departments.append(belongs)
     return departments
 
+#クエリを実行する関数
+
+#def can_add_emp():
+
+
 #insert判定
-#def can_add(image, name, price, stock):
+#def can_add_department(image, name, price, stock):
 #    return True, ""
 
 #delete判定
@@ -231,6 +236,7 @@ def emp_add():
 def emp_add_result():
     return render_template("emp_edit_result.html")
 
+###################
 #部署データ一覧
 @app.route('/de_info', methods=['GET','POST'])
 def de_info():
@@ -248,19 +254,16 @@ def de_info():
         cnx.close()
     return render_template("de_info.html",departments=departments)
 
-#部署データ編集
-@app.route('/de_edit', methods=['GET','POST'])
-def de_edit():
-    if "de_add" in request.form.keys():
-        department = request.form.get("department","")
-
+#部署データ新規追加
+@app.route('/de_add', methods=['GET','POST'])
+def de_add():
+    department = request.form.get("department","")
+    
     try:
         cnx, cursor = connect_db()
 
         query = 'SELECT department_id, department FROM department;'
         cursor.execute(query)
-
-        #departments = get_department_info(cursor)
 
         add_department = "INSERT INTO department (department) VALUES({});".format(department)
         cursor.execute(add_department)
@@ -270,6 +273,30 @@ def de_edit():
         printError(err)
     else:
         cnx.close()
+
+    return render_template("de_edit.html")
+
+#部署データ編集
+@app.route('/de_edit', methods=['GET','POST'])
+def de_edit():
+    department_id = request.form.get("department_id","")
+    department = request.form.get("department","")
+    
+    if "de_setting" in request.form.keys():
+        try:
+            cnx, cursor = connect_db()
+    
+            query = 'SELECT department_id, department FROM department where department_id = {};'.format(department_id)
+            cursor.execute(query)
+    
+            edit_department = " department (department) VALUES({});".format(department)
+            cursor.execute(edit_department)
+            cnx.commit()
+    
+        except mysql.connector.Error as err:
+            printError(err)
+        else:
+            cnx.close()
 
     return render_template("de_edit.html")
 
@@ -295,3 +322,8 @@ def de_delete():
         cnx.close()
 
     return render_template("de_info.html")
+
+#部署データ削除結果
+@app.route('/de_delete_result', methods=['GET','POST'])
+def de_delete_result():
+    return render_template("de_delete_result.html")
