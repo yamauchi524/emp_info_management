@@ -8,13 +8,11 @@
 <body>
     <h2>部署データを編集します。</h2>
     <dev>
-        <form method="POST" action="de_edit_result">
-            {% for belongs in departments %}
-            <p>部署名：<input type="text" name="department" value="{{belongs.department}}"></p>
-            <input type="hidden" name="department_id" value="{{belongs.department_id}}">
-            {% endfor %}
-            <p><input type="submit" name="de_setting" onclick="location.href='de_edit_result'" value="設定"></p>
-            <p><input type="submit" name="de_cancel" onclick="history.back();" value="キャンセル"></p>
+        <form method="POST" action="">
+            <p>部署名：<input type="text" name="edit_department" value="{{department}}"></p>
+            <input type="hidden" name="department_id" value="{{department_id}}">
+            <p><input type="submit" name="de_setting" formaction="de_edit_result" value="設定"></p>
+            <p><input type="submit" name="de_cancel" formaction="de_info" value="キャンセル"></p>
         </form>
         
     </dev>
