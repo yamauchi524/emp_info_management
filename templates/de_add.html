@@ -6,13 +6,10 @@
 </head>
 
 <body>
-    <h2>部署データを編集します。</h2>
+    <h2>部署データを新規作成します。</h2>
     <dev>
-        <form method="POST" action="de_edit_result">
-            {% for belongs in departments %}
-            <p>部署名：<input type="text" name="department" value="{{belongs.department}}"></p>
-            <input type="hidden" name="department_id" value="{{belongs.department_id}}">
-            {% endfor %}
+        <form method="POST" action="de_info">
+            <p>部署名：<input type="text" name="department" value=""></p>
             <p><input type="submit" name="de_setting" onclick="location.href='de_edit_result'" value="設定"></p>
             <p><input type="submit" name="de_cancel" onclick="history.back();" value="キャンセル"></p>
         </form>

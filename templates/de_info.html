@@ -45,6 +45,7 @@
             <tr style="background-color: lightblue;">
                 <th>部署ID</th>
                 <th>部署名</th>
+                <th colspan="2">部署データの編集</th>
             </tr>
 
             {% for belongs in departments %}
@@ -70,7 +71,7 @@
 
     <!--部署の追加-->
     <dev>
-        <form method="POST" action="de_edit">
+        <form method="POST" action="de_add">
             <p><button type="submit" name="de_add" value="">新規追加</button></p>
         </form>
     </dev>
