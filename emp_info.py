@@ -208,11 +208,6 @@ def emp_edit():
         cnx.close()
     return render_template("emp_edit.html")
 
-#社員情報編集結果
-@app.route('/emp_edit_result', methods=['GET','POST'])
-def emp_edit_result():
-    return render_template("emp_edit_result.html")
-
 #社員情報追加
 @app.route('/emp_add', methods=['GET','POST'])
 def emp_add():
@@ -252,10 +247,10 @@ def emp_add():
     
     return render_template("emp_add.html",image_path=image_path)
 
-#社員データ追加結果
-@app.route('/emp_add_result', methods=['GET','POST'])
-def emp_add_result():
-    return render_template("emp_edit_result.html")
+#社員データ編集結果
+@app.route('/emp_result', methods=['GET','POST'])
+def emp_result():
+    return render_template("emp_result.html")
 
 ###########################
 #部署データ一覧
@@ -296,12 +291,12 @@ def de_add():
 
                 flash("データの更新に成功しました","success")
                 #return render_template("de_result.html")
-                return redirect('de_result')
+                return redirect(url_for('de_result'))
 
             else:
                 flash("データの更新に失敗しました","failed")
                 #return render_template("de_result.html")
-                return redirect('de_result')
+                return redirect(url_for('de_result'))
 
     except mysql.connector.Error as err:
         printError(err)
@@ -333,12 +328,12 @@ def de_edit():
 
                 flash("データの更新に成功しました","success")
                 #return render_template("de_result.html")
-                return redirect('de_result')
+                return redirect(url_for('de_result'))
 
             else:
                 flash("データの更新に失敗しました","failed")
                 #return render_template("de_result.html")
-                return redirect('de_result')
+                return redirect(url_for('de_result'))
 
     except mysql.connector.Error as err:
         printError(err)
@@ -377,4 +372,4 @@ def de_delete():
         cnx.close()
 
     flash("データの削除に成功しました","success")
-    return redirect('de_info')
+    return redirect(url_for('de_info'))
