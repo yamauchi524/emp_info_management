@@ -312,8 +312,9 @@ def de_add():
 @app.route('/de_edit', methods=['GET','POST'])
 def de_edit():
     department_id = request.form.get("de_edit","")
-    message = ""
     can_edit = ""
+    #message = ""
+    message = session.get('message')
     
     try:
         cnx, cursor = connect_db()
@@ -330,8 +331,10 @@ def de_edit():
                 cursor.execute(update_department)
                 cnx.commit()
 
+                session["message"] = message
+
             else:
-                return render_template("de_edit_result.html",message=message)
+                session["message"] = message
 
     except mysql.connector.Error as err:
         printError(err)
@@ -344,8 +347,6 @@ def de_edit():
 @app.route('/de_edit_result', methods=['GET','POST'])
 def de_edit_result():
     message = session.get('message')
-    #if 'message' in session:
-    # message =
     return render_template("de_edit_result.html",message=message)
 
 #部署情報削除
@@ -369,4 +370,5 @@ def de_delete():
     else:
         cnx.close()
 
+    flash("データの削除に成功しました","success")
     return redirect('de_info')
