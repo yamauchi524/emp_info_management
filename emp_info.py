@@ -5,7 +5,7 @@
 
 #Flask,テンプレート,リクエスト読み込み
 import os
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, flash, redirect, url_for, session
 #ファイル名をチェックする関数
 from werkzeug.utils import secure_filename
 
@@ -29,12 +29,14 @@ import re
 
 #自分をappという名称でインスタンス化
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "emp_info"
 
 #データベースの情報
 host = 'localhost' # データベースのホスト名又はIPアドレス
 username = 'root'  # MySQLのユーザ名
 passwd   = 'Hito05hito'    # MySQLのパスワード
 dbname   = 'my_database'    # データベース名
+buffered = True
 
 #アップロード画像の保存場所
 UPLOAD_FOLDER = './static/'
@@ -57,7 +59,7 @@ def make_image_id(n):
 
 #DBの操作
 def connect_db():
-    cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname)
+    cnx = mysql.connector.connect(host=host, user=username, password=passwd, database=dbname, buffered=buffered)
     cursor = cnx.cursor()
     return cnx, cursor
 
@@ -78,6 +80,11 @@ def get_emp_info(cursor):
         emp.append(data)
     return emp
 
+#編集する社員情報の取得
+#def get_edit_emp_info(cursor):
+#    for (emp_id, name, age, gender, image, postal_code, pref, address, department, join_date, leave_date) in cursor:
+#        data = {"emp_id":emp_id, "name":name, "age":age, "gender":gender, "image":image, "postal_code":postal_code, "pref":pref, "address":address, "department":department, "join_date":join_date, "leave_date":leave_date}
+
 #部署情報の取得
 def get_department_info(cursor):
     departments = []
@@ -86,24 +93,23 @@ def get_department_info(cursor):
         departments.append(belongs)
     return departments
 
-#編集する部署情報
-def edit_department_info(cursor):
+#編集する部署情報の取得
+def get_edit_department_info(cursor):
     for (department_id, department) in cursor:
         belongs = {"department_id":department_id,"department":department}
 
-    edit_department_id = belongs["department_id"]
-    edit_department = belongs["departmetn"]
+    #department_id = belongs["department_id"]
+    edit_department = belongs["department"]
 
-    return edit_department_id,edit_department
+    return edit_department
 
 #クエリを実行する関数
 
-#def can_add_emp():
-
-
-#insert判定
-def can_add_department(department):
+#編集できたか判定
+def can_edit_department(department):
     if department == "":
+        return False, 1
+    if re.fullmatch('[a-zA-Z0-9]+',department):
         return False, 1
     else:
         return True, 2
@@ -253,7 +259,7 @@ def emp_add_result():
 
 ###########################
 #部署データ一覧
-@app.route('/de_info', methods=['GET'])
+@app.route('/de_info', methods=['GET','POST'])
 def de_info():
     try:
         cnx, cursor = connect_db()
@@ -270,7 +276,7 @@ def de_info():
     return render_template("de_info.html",departments=departments)
 
 #部署データ新規追加
-@app.route('/de_add', methods=['POST'])
+@app.route('/de_add', methods=['GET','POST'])
 def de_add():
     department = request.form.get("department","")
     can_add = ""
@@ -282,19 +288,15 @@ def de_add():
         cursor.execute(query)
 
         if "de_setting" in request.form.keys():
-            can_add, message = can_add_department(department)
+            can_add, message = can_edit_department(department)
 
             if can_add:
-                print(can_add)
-                print(message)
-                add_department = "INSERT INTO department(department) VALUES({});".format(department)
+                add_department = "INSERT INTO department(department) VALUES('{}');".format(department)
                 cursor.execute(add_department)
                 cnx.commit()
                 return render_template("de_edit_result.html",message=message)
 
             else:
-                print(can_add)
-                print(message)
                 return render_template("de_edit_result.html",message=message)
 
     except mysql.connector.Error as err:
@@ -302,64 +304,69 @@ def de_add():
     else:
         cnx.close()
 
-    return render_template("de_add.html")
+    return render_template("de_edit.html")
 
 #部署データ編集
-@app.route('/de_edit', methods=['POST'])
+@app.route('/de_edit', methods=['GET','POST'])
 def de_edit():
-    department_id = request.form.get("department_id","")
-    edit_department = request.form.get("department","")
+    department_id = request.form.get("de_edit","")
+    message = ""
+    can_edit = ""
     
-    #if 
     try:
         cnx, cursor = connect_db()
         query = 'SELECT department_id, department FROM department WHERE department_id = {};'.format(department_id)
-        # where department_id = {};'.format(department_id)
         cursor.execute(query)
+        edit_department = get_edit_department_info(cursor)
 
-        #departments = get_department_info(cursor)
-        department_id, department = edit_department_info(cursor)
+        if "de_setting" in request.form.keys():
+            new_department = request.form.get("new_department","")
+            can_edit, message = can_edit_department(new_department)
 
-        #空欄じゃなければ更新
-        edit_department = "UPDATE department SET department = {} WHERE drink_id = {};".format(edit_department, department_id)
-        cursor.execute(edit_department)
-        cnx.commit()
+            if can_edit:
+                update_department = "UPDATE department SET department = {} WHERE drink_id = {};".format(edit_department, department_id)
+                cursor.execute(update_department)
+                cnx.commit()
+
+            else:
+                return render_template("de_edit_result.html",message=message)
 
     except mysql.connector.Error as err:
         printError(err)
     else:
         cnx.close()
 
-    return render_template("de_edit.html",departments=departments)
+    return render_template("de_edit.html",edit_department=edit_department)
 
 #部署データ編集結果
-@app.route('/de_edit_result', methods=['POST'])
+@app.route('/de_edit_result', methods=['GET','POST'])
 def de_edit_result():
+    #messageの格納が必要
+    #sessionを使う
+    #if 'message' in session:
+    # message =
     return render_template("de_edit_result.html")
 
 #部署情報削除
 @app.route('/de_delete', methods=['GET','POST'])
 def de_delete():
-    department_id = request.form.get("department_id","")
-    department = request.form.get("department","")
+    #削除する部署idを取得
+    department_id = request.form.get("de_delete","")
     
     try:
         cnx, cursor = connect_db()
-        query = 'SELECT department_id, department FROM department;' #where department_id = {};'.format(department_id)
+        query = 'SELECT department_id, department FROM department;'
         cursor.execute(query)
 
         delete_department = 'DELETE FROM department WHERE drink_id = {};'.format(department_id)
         cursor.execute(delete_department)
         cnx.commit()
+        #失敗したらflashメッセージ
+        #flash("データを削除することができませんでした。","failed")
 
     except mysql.connector.Error as err:
         printError(err)
     else:
         cnx.close()
 
-    return render_template("de_info.html")
-
-#部署データ削除結果
-@app.route('/de_delete_result', methods=['GET','POST'])
-def de_delete_result():
-    return render_template("de_delete_result.html")
+    return redirect('de_info')
