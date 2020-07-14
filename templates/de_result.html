@@ -3,15 +3,36 @@
 <head>
     <meta charset="utf-8">
     <title>データ更新結果</title>
+    <style>
+    li {
+        margin-left: -50px;
+        border-bottom: 0.5px solid white;
+        width: 100vw;
+        color: white;
+        padding-left: 10px;
+    }
+    .success {
+        background-color: lightseagreen;
+    }
+    .failed {
+        background-color: deeppink;
+    }
+    </style>
 </head>
 
 <body>
     <h2>データ更新結果</h2>
-    {% if message == 1%}
-    <p>データベースへの登録に失敗しました。</p>
-    {% elif message == 2%}
-    <p>データベースへの登録に成功しました。</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
     {% endif %}
+    {% endwith %}
+
     <footer><input type="button" onclick="location.href='de_info'" value='部署一覧へ戻る'></footer>
 </body>
 </html>
