@@ -29,7 +29,7 @@ import re
 
 #自分をappという名称でインスタンス化
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "emp_info"
+app.secret_key = 'emp_info'
 
 #データベースの情報
 host = 'localhost' # データベースのホスト名又はIPアドレス
@@ -280,7 +280,8 @@ def de_info():
 def de_add():
     department = request.form.get("department","")
     can_add = ""
-    message = ""
+    #message = ""
+    message = session.get('message')
 
     try:
         cnx, cursor = connect_db()
@@ -294,10 +295,11 @@ def de_add():
                 add_department = "INSERT INTO department(department) VALUES('{}');".format(department)
                 cursor.execute(add_department)
                 cnx.commit()
-                return render_template("de_edit_result.html",message=message)
+
+                session["message"] = message
 
             else:
-                return render_template("de_edit_result.html",message=message)
+                session["message"] = message
 
     except mysql.connector.Error as err:
         printError(err)
@@ -324,7 +326,7 @@ def de_edit():
             can_edit, message = can_edit_department(new_department)
 
             if can_edit:
-                update_department = "UPDATE department SET department = {} WHERE drink_id = {};".format(edit_department, department_id)
+                update_department = "UPDATE department SET department = {} WHERE department_id = {};".format(edit_department, department_id)
                 cursor.execute(update_department)
                 cnx.commit()
 
@@ -341,16 +343,14 @@ def de_edit():
 #部署データ編集結果
 @app.route('/de_edit_result', methods=['GET','POST'])
 def de_edit_result():
-    #messageの格納が必要
-    #sessionを使う
+    message = session.get('message')
     #if 'message' in session:
     # message =
-    return render_template("de_edit_result.html")
+    return render_template("de_edit_result.html",message=message)
 
 #部署情報削除
 @app.route('/de_delete', methods=['GET','POST'])
 def de_delete():
-    #削除する部署idを取得
     department_id = request.form.get("de_delete","")
     
     try:
@@ -358,7 +358,7 @@ def de_delete():
         query = 'SELECT department_id, department FROM department;'
         cursor.execute(query)
 
-        delete_department = 'DELETE FROM department WHERE drink_id = {};'.format(department_id)
+        delete_department = 'DELETE FROM department WHERE department_id = {};'.format(department_id)
         cursor.execute(delete_department)
         cnx.commit()
         #失敗したらflashメッセージ
