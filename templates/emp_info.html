@@ -50,7 +50,7 @@
             
             {% for data in emp %}
             <tr>                
-                <form method="POST" action="">
+                <form method="POST" action="emp_edit">
                     <td>{{ data.emp_id }}</td>
                     <td>{{ data.name }}</td>
                 
@@ -59,7 +59,7 @@
                     </td>
                 </form>
 
-                <form method="POST" action="">
+                <form method="POST" action="emp_delete">
                     <td>
                         <button type="submit" name="delete" value="{{data.id}}">削除</button>    
                     </td>
@@ -72,7 +72,7 @@
 
     <!--社員の追加-->
     <dev>
-        <form method="POST" action="emp_edit">
+        <form method="POST" action="emp_add">
             <p><button type="submit" name="edit" value="">新規追加</button></p>
         </form>
     </dev>
@@ -86,7 +86,7 @@
 
     <!--csvに出力-->
     <dev>
-        <form method="POST" action="">
+        <form method="POST" action="csv">
             <p><button type="submit" name="csv" value="">CSVファイルに出力</button></p>
         </form>
     </dev>
@@ -97,7 +97,7 @@
 
     <!--社員の追加-->
     <dev>
-        <form method="POST" action="emp_edit">
+        <form method="POST" action="emp_add">
             <p><button type="submit" name="edit" value="">新規追加</button></p>
         </form>
     </dev>
