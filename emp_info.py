@@ -103,23 +103,23 @@ def get_edit_department_info(cursor):
 
     return edit_department
 
-#クエリを実行する関数
-
 #編集できたか判定
 def can_edit_department(department):
     if department == "":
-        return False, 1
+        #return False, 1
+        return False
     if re.fullmatch('[a-zA-Z0-9]+',department):
-        return False, 1
-    else:
-        return True, 2
+        #return False, 1
+        return False
+    #return True, 2
+    return True
 
-#delete判定
-def can_delete_department(department_id):
-    if department_id == "":
-        return False, 3
-    else:
-        return True, 4
+#クエリを実行する関数をかく
+#def add_department():
+
+#def edit_department():
+
+#def delete_department():
 
 #社員情報一覧
 @app.route('/emp_info', methods=['GET','POST'])
@@ -280,8 +280,6 @@ def de_info():
 def de_add():
     department = request.form.get("department","")
     can_add = ""
-    #message = ""
-    message = session.get('message')
 
     try:
         cnx, cursor = connect_db()
@@ -289,17 +287,21 @@ def de_add():
         cursor.execute(query)
 
         if "de_setting" in request.form.keys():
-            can_add, message = can_edit_department(department)
+            can_add = can_edit_department(department)
 
             if can_add:
                 add_department = "INSERT INTO department(department) VALUES('{}');".format(department)
                 cursor.execute(add_department)
                 cnx.commit()
 
-                session["message"] = message
+                flash("データの更新に成功しました","success")
+                #return render_template("de_result.html")
+                return redirect('de_result')
 
             else:
-                session["message"] = message
+                flash("データの更新に失敗しました","failed")
+                #return render_template("de_result.html")
+                return redirect('de_result')
 
     except mysql.connector.Error as err:
         printError(err)
@@ -313,28 +315,30 @@ def de_add():
 def de_edit():
     department_id = request.form.get("de_edit","")
     can_edit = ""
-    #message = ""
-    message = session.get('message')
     
     try:
         cnx, cursor = connect_db()
         query = 'SELECT department_id, department FROM department WHERE department_id = {};'.format(department_id)
         cursor.execute(query)
         edit_department = get_edit_department_info(cursor)
-
+        
         if "de_setting" in request.form.keys():
             new_department = request.form.get("new_department","")
-            can_edit, message = can_edit_department(new_department)
+            can_edit = can_edit_department(new_department)
 
             if can_edit:
-                update_department = "UPDATE department SET department = {} WHERE department_id = {};".format(edit_department, department_id)
+                update_department = "UPDATE department SET department = {} WHERE department_id = {};".format(new_department, department_id)
                 cursor.execute(update_department)
                 cnx.commit()
 
-                session["message"] = message
+                flash("データの更新に成功しました","success")
+                #return render_template("de_result.html")
+                return redirect('de_result')
 
             else:
-                session["message"] = message
+                flash("データの更新に失敗しました","failed")
+                #return render_template("de_result.html")
+                return redirect('de_result')
 
     except mysql.connector.Error as err:
         printError(err)
@@ -344,10 +348,13 @@ def de_edit():
     return render_template("de_edit.html",edit_department=edit_department)
 
 #部署データ編集結果
-@app.route('/de_edit_result', methods=['GET','POST'])
-def de_edit_result():
-    message = session.get('message')
-    return render_template("de_edit_result.html",message=message)
+@app.route('/de_result', methods=['GET','POST'])
+def de_result():
+    return render_template("de_result.html")
+
+#@app.route('/de_result_failed', methods=['GET','POST'])
+#def de_result_failed():
+#    return render_template("de_result_failed.html")
 
 #部署情報削除
 @app.route('/de_delete', methods=['GET','POST'])
@@ -362,11 +369,10 @@ def de_delete():
         delete_department = 'DELETE FROM department WHERE department_id = {};'.format(department_id)
         cursor.execute(delete_department)
         cnx.commit()
-        #失敗したらflashメッセージ
-        #flash("データを削除することができませんでした。","failed")
 
     except mysql.connector.Error as err:
         printError(err)
+        flash("データを削除することができませんでした。","failed")
     else:
         cnx.close()
 
