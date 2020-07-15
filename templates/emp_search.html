@@ -12,7 +12,7 @@
             <p>所属部署：
                 <select name="department">
                     <option value="" selected>未選択</option>
-                    {% for belongs in departments %}
+                    {% for belongs in emp %}
                     <option value="{{belongs.department}}">{{belongs.department}}</option>
                     {% endfor %}
                 </select>
