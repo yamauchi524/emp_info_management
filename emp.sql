@@ -16,14 +16,16 @@ CREATE TABLE emp(
     name VARCHAR(255),
     age INT UNSIGNED,
     gender VARCHAR(255),
-    image_id VARCHAR(255), 
-    postal_code INT(7) UNSIGNED,
+    image_id INT, 
+    postal_code VARCHAR(8),
     pref VARCHAR(100),
     address VARCHAR(255),
-    department_id VARCHAR(255),
+    department_id INT,
     join_date DATE,
     leave_date DATE,
     register_date DATETIME DEFAULT CURRENT_TIMESTAMP, 
     update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(emp_id)
 );
+
+insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date) values('emp0001','田中太郎', 24, '男', 1,'100-1000','東京都','千代田区', 1, '2020/4/1');
