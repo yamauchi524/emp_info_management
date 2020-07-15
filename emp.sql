@@ -12,7 +12,6 @@
 退社日*/
 
 CREATE TABLE emp(
-    id INT AUTO_INCREMENT,
     emp_id VARCHAR(255),
     name VARCHAR(255),
     age INT UNSIGNED,
@@ -26,5 +25,5 @@ CREATE TABLE emp(
     leave_date DATE,
     register_date DATETIME DEFAULT CURRENT_TIMESTAMP, 
     update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    PRIMARY KEY(id)
+    PRIMARY KEY(emp_id)
 );
