@@ -18,11 +18,7 @@ from PIL import Image
 
 import re
 # ひらがなの抽出
-#hiragana = re.findall("[ぁ-ん]", txt)
-# カタカナの抽出
-#katakana = re.findall("[ァ-ン]", txt)
-# 漢字の抽出
-#kanji = re.findall("[一-龥]", txt)
+#hiragana = re.findall("[ぁ-んァ-ン一-龥]")
 
 import random, string
 
@@ -128,6 +124,16 @@ def can_edit_department(department):
     #return True, 2
     return True
 
+#検索の情報
+#def get_serch_info(department, emp_id, char):
+#    if department == "" and emp_id == "" and char == "": #全部空欄
+#        search_emp = 1
+#    if department != "":
+#        search_emp = 1
+#    if 
+#    return search_emp
+
+
 #クエリを実行する関数をかく
 #def add_emp():
 
@@ -181,7 +187,7 @@ def emp_add():
                 image_path = save_image(image)
                 image_id = randomname(8)
 
-                add_image = "INSERT INTO image (image_id, image) VALUE('{}', '{}');".format(image_id, image_path)
+                add_image = "INSERT INTO image (image_id, image, emp_id) VALUE('{}', '{}', '{}');".format(image_id, image_path, emp_id)
                 cursor.execute(add_image)
                 
                 add_emp = "INSERT INTO emp (emp_id, name, age, gender, image_id, postal_code, pref, address, department_id, join_date, leave_date) VALUES('{}', '{}', {}, '{}', '{}', '{}', '{}', '{}', {}, '{}', '{}');".format(emp_id, name, age, gender, image_id, postal_code, pref, address, department_id, join_date, leave_date)
@@ -198,6 +204,8 @@ def emp_add():
 
     except mysql.connector.Error as err:
         printError(err)
+        flash("データの更新に失敗しました","failed")
+        return render_template("emp_result.html")
     else:
         cnx.close()
     
@@ -220,7 +228,7 @@ def emp_edit():
         cursor.execute(query)
         departments = get_department_info(cursor)
 
-        #if "emp_setting"
+        #if "emp_setting" in request.form.keys():
         
 
     except mysql.connector.Error as err:
@@ -233,25 +241,29 @@ def emp_edit():
 @app.route('/emp_delete', methods=['GET','POST'])
 def emp_delete():
     emp_id = request.form.get("emp_delete","")
+    print(emp_id)
 
     try:
         cnx, cursor = connect_db()
-
-        query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE = emp.emp_id = '{}';".format(emp_id)
+        query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;" #WHERE = emp.emp_id = '{}';".format(emp_id)
         cursor.execute(query)
 
-        emp = get_emp_info(cursor)
+        delete_emp = "DELETE FROM emp WHERE emp_id = '{}';".format(emp_id)
+        cursor.execute(delete_emp)
 
-        #if "emp_delete"
+        delete_image = "DELETE FROM image WHERE emp_id = '{}';".format(emp_id)
+        cursor.execute(delete_image)
+        cnx.commit()
 
     except mysql.connector.Error as err:
         printError(err)
         flash("データの削除に失敗しました","failed")
+        return render_template("emp_result.html")
     else:
         cnx.close()
     
     flash("データの削除に成功しました","success")
-    return redirect(url_for('emp_info'))
+    return render_template("emp_result.html")
     #return render_template("emp_info.html", emp=emp)
 
 #CSV出力
@@ -377,6 +389,8 @@ def de_edit():
 
     except mysql.connector.Error as err:
         printError(err)
+        flash("データの更新に失敗しました","failed")
+        return render_template("de_result.html")
     else:
         cnx.close()
 
@@ -412,4 +426,5 @@ def de_delete():
         cnx.close()
 
     flash("データの削除に成功しました","success")
-    return redirect(url_for('de_info'))
+    #return redirect(url_for('de_info'))
+    return render_template("de_result.html")
