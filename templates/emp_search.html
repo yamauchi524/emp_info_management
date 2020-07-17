@@ -8,11 +8,11 @@
 <body>
     <h2>条件を指定して社員情報を検索します。</h2>
     <dev>
-        <form method="POST" action="">
+        <form method="POST" action="emp_info">
             <p>所属部署：
                 <select name="department">
                     <option value="" selected>未選択</option>
-                    {% for belongs in emp %}
+                    {% for belongs in departments %}
                     <option value="{{belongs.department}}">{{belongs.department}}</option>
                     {% endfor %}
                 </select>
@@ -20,9 +20,8 @@
             </p>
             <p>社員ID：<input type="text" name="emp_id" value=""></p>
             <p>名前に含む文字：<input type="text" name="name_char" value=""></p>
-            <p><input type="submit" name="search" value="社員検索"></p>
+            <p><input type="submit" name="emp_search" value="社員検索"></p>
         </form>
-        
     </dev>
 
 </body>

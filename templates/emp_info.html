@@ -10,7 +10,7 @@
         }
 
         table {
-            width: 300px;
+            width: 500px;
             border-collapse: collapse;
         }
 
@@ -35,37 +35,63 @@
         .input_text_width {
             width: 60px;
         }
+
+        li {
+        margin-left: -50px;
+        border-bottom: 0.5px solid white;
+        width: 100vw;
+        color: white;
+        padding-left: 10px;
+        }
+        .success {
+            background-color: lightseagreen;
+        }
+        .failed {
+            background-color: deeppink;
+        }
     </style>
 </head>
 
 <body>
+    <h3>データ更新結果</h3>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class=flashes>
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}    
+    
+    {% if emp %}
     <dev>
         <table>
-            {% if emp %}
-            <caption>社員一覧</caption>
-            <tr style="background-color: lightblue;">
-                <th>社員ID</th>
-                <th>名前</th>
-            </tr>
+        <caption>社員一覧</caption>
+        <tr style="background-color: lightblue;">
+            <th>社員ID</th>
+            <th>名前</th>
+        </tr>
+        
+        {% for data in emp %}
+        <tr>                
+            <form method="POST" action="emp_edit">
+                <td>{{ data.emp_id }}</td>
+                <td>{{ data.name }}</td>
             
-            {% for data in emp %}
-            <tr>                
-                <form method="POST" action="emp_edit">
-                    <td>{{ data.emp_id }}</td>
-                    <td>{{ data.name }}</td>
-                
-                    <td>
-                        <button type="submit" name="edit" value="{{data.id}}">編集</button>
-                    </td>
-                </form>
+                <td>
+                    <button type="submit" name="emp_edit" value="{{data.emp_id}}">編集</button>
+                </td>
+            </form>
 
-                <form method="POST" action="emp_delete">
-                    <td>
-                        <button type="submit" name="delete" value="{{data.id}}">削除</button>    
-                    </td>
-                </form>
-            </tr>
-            {% endfor %}
+            <form method="POST" action="emp_delete">
+                <td>
+                    <button type="submit" name="emp_delete" value="{{data.emp_id}}">削除</button>    
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
 
         </table>
     </dev>
@@ -73,14 +99,14 @@
     <!--社員の追加-->
     <dev>
         <form method="POST" action="emp_add">
-            <p><button type="submit" name="add" value="">新規追加</button></p>
+            <p><button type="submit" name="emp_add" value="">新規追加</button></p>
         </form>
     </dev>
 
     <!--社員の検索-->
     <dev>
         <form method="POST" action="emp_search">
-            <p><button type="submit" name="search" value="">社員検索</button></p>
+            <p><button type="submit" name="emp_search" value="">社員検索</button></p>
         </form>
     </dev>
 
@@ -98,14 +124,14 @@
     <!--社員の追加-->
     <dev>
         <form method="POST" action="emp_add">
-            <p><button type="submit" name="add" value="">新規追加</button></p>
+            <p><button type="submit" name="emp_add" value="">新規追加</button></p>
         </form>
     </dev>
 
     <!--社員の検索-->
     <dev>
         <form method="POST" action="emp_search">
-            <p><button type="submit" name="search" value="">社員検索</button></p>
+            <p><button type="submit" name="emp_search" value="">社員検索</button></p>
         </form>
     </dev>
     {% endif %}

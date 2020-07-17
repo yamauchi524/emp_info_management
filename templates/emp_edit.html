@@ -6,27 +6,38 @@
 </head>
 
 <body>
+    {% if emp %}
+    {% for data in emp %}
     <h3>社員情報を入力してください。</h3>
-    <!--新規追加と編集で表示を分ける？-->
-    
-    {% if edit_emp %}
     <section>
-        <form method="post" enctype="multipart/form-data" action="insert">
-            <p>社員ID：<input type="text" name="emp_id" value=""></p>
-            <p>名前：<input type="text" name="name" value=""></p>
-            <p>年齢：<input type="text" name="age" value=""></p>
-            <p>性別：<input type="radio" name="gender" value="男" {{'checked' if gender == '男'}}>男
+        <form method="post" enctype="multipart/form-data" action="">
+            <p>社員ID：<input type="text" name="emp_id" value="{{data.emp_id}}"><br>
+                ※emp+数字4桁
+            </p>
+
+            <p>名前：<input type="text" name="name" value="{{data.name}}"></p>
+            <p>年齢：<input type="text" name="age" value="{{data.age}}"></p>
+            
+            {% if data.gender == '男' %}
+            <p>性別：<input type="radio" name="gender" value="男" checked {{'checked' if gender == '男'}}>男
             <input type="radio" name="gender" value="女" {{'checked' if gender == '女'}}>女 </p>
+            {% elif data.gender == '女' %}
+            <p>性別：<input type="radio" name="gender" value="男" {{'checked' if gender == '男'}}>男
+            <input type="radio" name="gender" value="女" checked {{'checked' if gender == '女'}}>女 </p>
+            {% endif %}
+
             <p>写真：</p>
-            <p><input type="file" name="new_img" accept="image/jpeg,image/png"></p>
+            <img src="{{data.image}}" height="200">
+            <p><input type="file" name="image" accept="image/jpeg,image/png"></p>
             <div>※アップロード可能なファイル形式は「JPEG」「PNG」のみ</div>
 
-            <p>郵便番号：<input type="text" name="postal_code" value=""></p>
-            <div>※ハイフンを入れて入力してください。（例）100-1000</div>
+            <p>郵便番号：<input type="text" name="postal_code" value="{{data.postal_code}}"><br>
+            ※ハイフンを入れて入力してください。（例）100-1000</p>
+            
 
             <p>都道府県：
                 <select name="pref">
-                    <option value="" selected>{{pref}}</option>
+                    <option value="" selected>{{ data.pref }}</option>
                     <option value="北海道">北海道</option>
                     <option value="青森県">青森県</option>
                     <option value="岩手県">岩手県</option>
@@ -77,23 +88,28 @@
                 </select>
             </p>
 
-            <p>住所：<input type="text" name="address" value=""></p>
+            <p>住所：<input type="text" name="address" value="{{data.address}}"></p>
             <dev>※市区町村以下を記入してください。</dev>
 
             <p>所属：
-                <select name="department">
-                    <option></option>
+                
+                <select name="department_id">
+                    <option value="" selected>{{ data.department }}</option>
+                    {% for belongs in departments %}
+                    <option value="{{belongs.department_id}}">{{ belongs.department }}</option>
+                    {% endfor %}
                 </select>
             </p>
 
-            <p>入社日：<input type="text" name="join_date" value=""><br>
+            <p>入社日：<input type="text" name="join_date" value="{{data.join_date}}"><br>
                 ※YYYY/MM/DDの形で記入してください</p>
 
-            <p>退社日：<input type="text" name="leave_date" value=""><br>
+            <p>退社日：<input type="text" name="leave_date" value="{{data.leave_date}}"><br>
                 ※YYYY/MM/DDの形で記入してください</p>
+            {% endfor %}
 
             <div><input type="submit" name="emp_setting" value="設定"></div>
-            <div><input type="submit" name="emp_cancel" value="キャンセル"></div>
+            <div><input type="submit" name="emp_cancel" formaction="emp_info" value="キャンセル"></div>
         </form>
     </section>
     {% else %}
@@ -101,16 +117,18 @@
     <!--新規追加と編集で表示を分ける？-->
     
     <section>
-        <form method="post" enctype="multipart/form-data" action="insert">
-            <p>社員ID：<input type="text" name="emp_id" value=""></p>
+        <form method="post" enctype="multipart/form-data" action="">
+            <p>社員ID：<input type="text" name="emp_id" value=""><br>
+                ※emp+数字4桁
+            </p>
             <p>名前：<input type="text" name="name" value=""></p>
             <p>年齢：<input type="text" name="age" value=""></p>
             <p>性別：<input type="radio" name="gender" value="男" {{'checked' if gender == '男'}}>男
             <input type="radio" name="gender" value="女" {{'checked' if gender == '女'}}>女 </p>
             <p>写真：</p>
-            {% if img_url %}
-            <p><img src="{{ image_path }}" height="150"></p>
-            {% endif %}
+            <!--{% if image_path %}
+            <p><img src="{{ image_path }}" height="200"></p>
+            {% endif %}-->
             <p><input type="file" name="new_img" accept="image/jpeg,image/png"><br>
                 ※アップロード可能なファイル形式は「JPEG」「PNG」のみ</p>
 
@@ -174,8 +192,11 @@
                 ※市区町村以下を記入してください。</p>
 
             <p>所属：
-                <select name="department">
+                <select name="department_id">
                     <option value="" selected>未指定</option>
+                    {% for belongs in departments %}
+                    <option value="{{belongs.department_id}}">{{ belongs.department }}</option>
+                    {% endfor %}
                 </select>
             </p>
 
@@ -186,7 +207,7 @@
                 ※YYYY/MM/DDの形で記入してください</p>
 
             <div><input type="submit" name="emp_setting" value="設定"></div>
-            <div><input type="submit" name="emp_cancel" value="キャンセル"></div>
+            <div><input type="submit" name="emp_cancel" formaction="emp_info" value="キャンセル"></div>
         </form>
     </section>
     {% endif %}

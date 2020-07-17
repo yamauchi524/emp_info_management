@@ -32,33 +32,6 @@
     {% endif %}
     {% endwith %}
 
-    {% if message == 1 %}
-        <p>【追加失敗】いずれかの値が未入力です。全ての項目を入力してください。</p>
-        <footer><input type="button" onclick="history.back();" value='管理画面へ戻る'></footer>
-    {% elif message == 2 %}
-        <p>【追加失敗】在庫数は0以上の整数で入力してください。</p>
-        <footer><input type="button" onclick="history.back();" value='管理画面へ戻る'></footer>
-    {% elif message == 3 %}
-        <p>【追加失敗】値段は0以上の整数で入力してください。</p>
-        <footer><input type="button" onclick="history.back();" value='管理画面へ戻る'></footer>
-    {% elif message == 4 %}
-        <p>【追加失敗】アップロード画像のファイル形式が違います。</p>
-        <footer><input type="button" onclick="history.back();" value='管理画面へ戻る'></footer>
-    {% elif message == 5 %}
-        <p>【追加成功】商品が追加されました。</p>
-        <footer><input type="button" onclick="location.href='index'" value='管理画面へ戻る'></footer>
-    {% elif message == 6 %}
-        <p>【更新失敗】在庫数は0以上の整数で入力してください。</p>
-        <footer><input type="button" onclick="history.back();" value='管理画面へ戻る'></footer>
-    {% elif message == 7 %}
-        <p>【更新成功】在庫数が変更されました。</p>
-        <footer><input type="button" onclick="location.href='index'" value='管理画面へ戻る'></footer>
-    {% elif message == 8 %}
-        <p>【更新失敗】公開または非公開を選択してください。</p>
-        <footer><input type="button" onclick="history.back();" value='管理画面へ戻る'></footer>
-    {% elif message == 9 %}
-        <p>【更新成功】公開ステータスが変更されました。</p>
-        <footer><input type="button" onclick="location.href='index'" value='管理画面へ戻る'></footer>
-    {% endif %}
+    <footer><input type="button" onclick="location.href='emp_info'" value='社員一覧画面へ戻る'></footer>
 </body>
 </html>
