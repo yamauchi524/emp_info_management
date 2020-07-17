@@ -118,7 +118,7 @@
     
     <section>
         <form method="post" enctype="multipart/form-data" action="">
-            <p>社員ID：<input type="text" name="emp_id" value=""><br>
+            <p>社員ID：<input type="text" name="emp_id" value="emp"><br>
                 ※emp+数字4桁
             </p>
             <p>名前：<input type="text" name="name" value=""></p>
@@ -200,11 +200,9 @@
                 </select>
             </p>
 
-            <p>入社日：<input type="text" name="join_date" value=""><br>
-                ※YYYY/MM/DDの形で記入してください</p>
+            <p>入社日：<input type="text" name="join_date" value=""></p>
 
-            <p>退社日：<input type="text" name="leave_date" value=""><br>
-                ※YYYY/MM/DDの形で記入してください</p>
+            <p>退社日：<input type="text" name="leave_date" value="2050/12/31"></p>
 
             <div><input type="submit" name="emp_setting" value="設定"></div>
             <div><input type="submit" name="emp_cancel" formaction="emp_info" value="キャンセル"></div>
