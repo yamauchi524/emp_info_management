@@ -29,3 +29,4 @@ CREATE TABLE emp(
 );
 
 insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date) values('emp0001','田中太郎', 24, '男', 1,'100-1000','東京都','千代田区', 1, '2020/4/1');
+insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date) values('emp0002','日本花子', 27, '女', 2,'200-2000','埼玉県','さいたま市', 2, '2017/4/1');
