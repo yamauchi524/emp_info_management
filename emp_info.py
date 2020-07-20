@@ -1,12 +1,13 @@
-#実習課題2
-#自動販売機
-# coding:utf-8
+#実習課題3
+#社員情報管理ツール
+#coding:utf-8
 
 #Flask,テンプレート,リクエスト読み込み
 import os
-from flask import Flask, render_template, request, flash, redirect, url_for, session
-#ファイル名をチェックする関数
+from flask import Flask, render_template, request, flash, redirect, url_for, make_response
+#ファイル名をチェックする
 from werkzeug.utils import secure_filename
+from io import StringIO
 
 #DBを使う
 import mysql.connector
@@ -105,13 +106,13 @@ def get_request():
     return emp_id, name, age, gender, image, postal_code, pref, address, department_id, join_date, leave_date
 
 
-#編集できたか判定（社員）
+#追加・編集できるかの判定（社員）
 def can_edit_emp(emp_id, name, age, gender, image, postal_code, pref, address, department):
     if emp_id == "" or name == "" or age == "" or gender == "" or image == "" or postal_code == "" or pref == "" or address == "" or department == "":
         return False
     return True
 
-#編集できたか判定（部署）
+#編集できるかの判定（部署）
 def can_edit_department(department):
     if department == "":
         #return False, 1
@@ -149,19 +150,37 @@ def exexute_search_query(search_department, search_emp_id, search_name):
         search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE department.department = '{}' AND emp.emp_id = '{}' AND emp.name LIKE '%{}%';".format(search_department, search_emp_id, search_name)
     return search_query
 
+#csv出力
+def get_csv(cursor):
+    csv = "社員ID, 氏名, 年齢, 性別, 画像ID, 郵便番号, 都道府県, 住所, 部署ID, 入社日, 退社日, 登録日, 更新日 \n"
+    csv_query = 'SELECT emp_id, name, age, gender, image_id, postal_code, pref, address, department_id, join_date, leave_date, register_date, update_date FROM emp;'
+    cursor.execute(csv_query)
+    for (emp_id, name, age, gender, image_id, postal_code, pref, address, department_id, join_date, leave_date, register_date, update_date) in cursor:
+        csv += "'{}','{}',{},'{}','{}','{}','{}','{}',{},'{}','{}','{}','{}' \n".format(emp_id, name, age, gender, image_id, postal_code, pref, address, department_id, join_date, leave_date, register_date, update_date)
+    return csv
+
+#クエリ実行（社員）
+def exexute_emp_query():
+    emp_query = 'SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;'
+    return emp_query
+
+#クエリ実行（部署）
+def execute_department_query():
+    department_query = 'SELECT department_id, department FROM department;'
+    return department_query
 
 #クエリを実行する関数をかく
-#def add_emp():
+#def execute_add_emp_query():
 
-#def edit_emp():
+#def exexute_edit_emp_query():
 
-#def delete_emp():
+#def execute_delete_emp_query():
 
-#def add_department():
+#def execute_add_department_query():
 
-#def edit_department():
+#def execute_edit_department_query():
 
-#def delete_department():
+#def exexute_delete_department_query():
 
 #社員情報一覧
 @app.route('/emp_info', methods=['GET','POST'])
@@ -169,8 +188,8 @@ def emp_info():
     try:
         cnx, cursor = connect_db()
 
-        query = 'SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;'
-        cursor.execute(query)
+        emp_query = exexute_emp_query()
+        cursor.execute(emp_query)
 
         emp = get_emp_info(cursor)
 
@@ -189,10 +208,10 @@ def emp_add():
     try:
         cnx, cursor = connect_db()
 
-        emp_query = 'SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;'
+        emp_query = exexute_emp_query()
         cursor.execute(emp_query)
 
-        department_query = 'SELECT department_id, department FROM department;'
+        department_query = execute_department_query()
         cursor.execute(department_query)
         departments = get_department_info(cursor)
         
@@ -227,7 +246,7 @@ def emp_add():
     
     return render_template("emp_edit.html", departments=departments)
 
-#社員情報編集
+#社員情報編集（未完成）
 @app.route('/emp_edit', methods=['GET','POST'])
 def emp_edit():
     emp_id = request.form.get("emp_edit","")
@@ -240,8 +259,8 @@ def emp_edit():
 
         emp = get_emp_info(cursor)
 
-        query = 'SELECT department_id, department FROM department;'
-        cursor.execute(query)
+        department_query = execute_department_query()
+        cursor.execute(department_query)
         departments = get_department_info(cursor)
 
         #if "emp_setting" in request.form.keys():
@@ -253,6 +272,17 @@ def emp_edit():
         cnx.close()
     return render_template("emp_edit.html", emp=emp, departments=departments)
 
+#社員データ追加結果
+#@app.route('/emp_add_result', methods=['GET','POST'])
+#def de_result():
+#    return render_template("de_result.html")
+
+#社員データ編集結果
+#@app.route('/emp_edit_result', methods=['GET','POST'])
+#def de_result():
+#    return render_template("de_result.html")
+
+
 #社員情報削除
 @app.route('/emp_delete', methods=['GET','POST'])
 def emp_delete():
@@ -261,8 +291,8 @@ def emp_delete():
 
     try:
         cnx, cursor = connect_db()
-        query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;" #WHERE = emp.emp_id = '{}';".format(emp_id)
-        cursor.execute(query)
+        emp_query = exexute_emp_query()
+        cursor.execute(emp_query)
 
         delete_emp = "DELETE FROM emp WHERE emp_id = '{}';".format(emp_id)
         cursor.execute(delete_emp)
@@ -283,17 +313,29 @@ def emp_delete():
     #return render_template("emp_info.html", emp=emp)
 
 #CSV出力
-#@app.route('/csv', methods=['GET','POST'])
-#def output_to_csv():
-#    return render_template
+@app.route('/csv', methods=['GET','POST'])
+def output_to_csv():
+    try:
+        cnx, cursor = connect_db()
+        csv = get_csv(cursor)
+
+        response = make_response(csv)
+        response.headers['Content-Disposition'] = 'attachment; filename = emp_information.csv'
+
+    except mysql.connector.Error as err:
+        printError(err)
+    else:
+        cnx.close()
+
+    return response
 
 #社員検索
 @app.route('/emp_search', methods=['GET','POST'])
 def emp_search():
     try:
         cnx, cursor = connect_db()
-        query = 'SELECT department_id, department FROM department;'
-        cursor.execute(query)
+        department_query = execute_department_query()
+        cursor.execute(department_query)
         departments = get_department_info(cursor) 
 
     except mysql.connector.Error as err:
@@ -310,7 +352,7 @@ def emp_search_result():
     try:
         cnx, cursor = connect_db()
 
-        search_query =exexute_search_query(search_department, search_emp_id, search_name)
+        search_query = exexute_search_query(search_department, search_emp_id, search_name)
         cursor.execute(search_query)
 
         emp = get_emp_info(cursor)
@@ -373,7 +415,7 @@ def de_add():
 
     return render_template("de_edit.html")
 
-#部署データ編集（UnboundlocalErrorが出るよ）
+#部署データ編集
 @app.route('/de_edit', methods=['GET','POST'])
 def de_edit():
     department_id = request.form.get("de_edit","")
@@ -411,14 +453,15 @@ def de_edit():
 
     return render_template("de_edit.html", departments=departments)
 
-#部署データ編集結果
-#@app.route('/de_result', methods=['GET','POST'])
+#部署データ追加結果
+#@app.route('/de_add_result', methods=['GET','POST'])
 #def de_result():
 #    return render_template("de_result.html")
 
-#@app.route('/de_result_failed', methods=['GET','POST'])
-#def de_result_failed():
-#    return render_template("de_result_failed.html")
+#部署データ追加結果
+#@app.route('/de_add_result', methods=['GET','POST'])
+#def de_result():
+#    return render_template("de_result.html")
 
 #部署情報削除
 @app.route('/de_delete', methods=['GET','POST'])
