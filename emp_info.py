@@ -1,6 +1,5 @@
 #実習課題2
 #自動販売機
-
 # coding:utf-8
 
 #Flask,テンプレート,リクエスト読み込み
@@ -17,8 +16,7 @@ from mysql.connector import errorcode
 from PIL import Image
 
 import re
-# ひらがなの抽出
-#hiragana = re.findall("[ぁ-んァ-ン一-龥]")
+#日本語 = re.findall("[ぁ-んァ-ン一-龥]")
 
 import random, string
 
@@ -124,14 +122,32 @@ def can_edit_department(department):
     #return True, 2
     return True
 
-#検索の情報
-#def get_serch_info(department, emp_id, char):
-#    if department == "" and emp_id == "" and char == "": #全部空欄
-#        search_emp = 1
-#    if department != "":
-#        search_emp = 1
-#    if 
-#    return search_emp
+#検索情報の取得
+def get_search_info():
+    search_department = request.form.get("search_department","")
+    search_emp_id = request.form.get("search_emp_id","")
+    search_name = request.form.get("search_name","")
+    return search_department, search_emp_id, search_name
+
+#検索の入力情報でどのクエリを実行するか決定
+def exexute_search_query(search_department, search_emp_id, search_name):
+    if search_department == "" and search_emp_id == "" and search_name == "":
+        search_query = 'SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;'
+    if search_department != "" and search_emp_id == "" and search_name == "": #部署だけ
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE department.department = '{}';".format(search_department) 
+    if search_department == "" and search_emp_id != "" and search_name == "": #IDだけ
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE emp.emp_id = '{}';".format(search_emp_id)
+    if search_department == "" and search_emp_id == "" and search_name != "": #名前だけ
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE emp.name LIKE '%{}%';".format(search_name)
+    if search_department != "" and search_emp_id != "" and search_name == "": #部署&ID
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE department.department = '{}' AND emp.emp_id = '{}';".format(search_department, search_emp_id)
+    if search_department != "" and search_emp_id == "" and search_name != "": #部署&名前
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE department.department = '{}' AND emp.name LIKE '%{}%';".format(search_department, search_name)
+    if search_department == "" and search_emp_id != "" and search_name != "": #ID&名前
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE emp.emp_id = '{}' AND emp.name LIKE '%{}%';".format(search_emp_id, search_name)
+    if search_department != "" and search_emp_id != "" and search_name != "": #全部
+        search_query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE department.department = '{}' AND emp.emp_id = '{}' AND emp.name LIKE '%{}%';".format(search_department, search_emp_id, search_name)
+    return search_query
 
 
 #クエリを実行する関数をかく
@@ -276,12 +292,9 @@ def emp_delete():
 def emp_search():
     try:
         cnx, cursor = connect_db()
-
         query = 'SELECT department_id, department FROM department;'
         cursor.execute(query)
-        departments = get_department_info(cursor)
-
-        #if "emp_search" in request.form.keys():
+        departments = get_department_info(cursor) 
 
     except mysql.connector.Error as err:
         printError(err)
@@ -292,11 +305,13 @@ def emp_search():
 #社員検索結果
 @app.route('/emp_search_result', methods=['GET','POST'])
 def emp_search_result():
+    search_department, search_emp_id, search_name = get_search_info()
+
     try:
         cnx, cursor = connect_db()
 
-        query = 'SELECT emp.emp_id, emp.name, emp.age, emp.gender, image.image, emp.postal_code, emp.pref, emp.address, department.department, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id;'
-        cursor.execute(query)
+        search_query =exexute_search_query(search_department, search_emp_id, search_name)
+        cursor.execute(search_query)
 
         emp = get_emp_info(cursor)
 
