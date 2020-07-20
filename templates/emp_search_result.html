@@ -53,9 +53,9 @@
 </head>
 
 <body>
+    <h3>検索結果</h3>
 
-    <!--フラッシュメッセージ-->
-    {% with messages = get_flashed_messages(with_categories=true) %}
+    <!--{% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     <ul class=flashes>
         {% for category, message in messages %}
@@ -63,7 +63,7 @@
         {% endfor %}
     </ul>
     {% endif %}
-    {% endwith %}    
+    {% endwith %}-->    
     
     {% if emp %}
     <dev>
