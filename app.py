@@ -9,7 +9,6 @@ from flask import Flask, render_template, request, flash, redirect, url_for, mak
 from werkzeug.utils import secure_filename
 from io import StringIO
 
-# from PIL import Image
 import re
 import random, string
 
@@ -21,13 +20,6 @@ import model.database as db
 
 app = Flask(__name__)
 app.secret_key = 'emp_info'
-
-#データベースの情報
-# host = 'localhost' # データベースのホスト名又はIPアドレス
-# username = 'root'  # MySQLのユーザ名
-# passwd   = 'Hito05hito'    # MySQLのパスワード
-# dbname   = 'my_database'    # データベース名
-# buffered = True
 
 #画像フォルダ
 UPLOAD_FOLDER = './static/images/'
@@ -212,18 +204,7 @@ def execute_department_query():
 #社員情報一覧
 @app.route('/emp_info', methods=['GET','POST'])
 def emp_info():
-    try:
-        cnx, cursor = db.get_connection()
-
-        emp_query = execute_emp_query()
-        cursor.execute(emp_query)
-
-        emp = db.get_emp_info(cursor)
-
-    except mysql.connector.Error as err:
-        printError(err)
-    else:
-        cnx.close()
+    emp = db.show_emp_info()
     return render_template("emp_info.html", emp=emp)
 
 #社員情報追加
@@ -274,24 +255,7 @@ def emp_add():
 @app.route('/emp_edit', methods=['GET','POST'])
 def emp_edit():
     emp_id = request.form.get("emp_edit","")
-
-    try:
-        cnx, cursor = db.get_connection()
-
-        query = "SELECT emp.emp_id, emp.name, emp.age, emp.gender, emp.image_id, image.image, emp.postal_code, emp.pref, emp.address, department.department, department.department_id, emp.join_date, emp.leave_date FROM emp LEFT JOIN image ON emp.image_id = image.image_id LEFT JOIN department ON emp.department_id = department.department_id WHERE emp.emp_id = '{}';".format(emp_id)
-        cursor.execute(query)
-
-        emp = get_edit_emp_info(cursor)
-
-        department_query = execute_department_query()
-        cursor.execute(department_query)
-        departments = get_department_info(cursor)
-
-    except mysql.connector.Error as err:
-        printError(err)
-    else:
-        cnx.close()
-
+    emp, departments = db.show_emp_edit(emp_id)
     return render_template("emp_edit.html", emp=emp, departments=departments)
 
 #社員情報編集処理
@@ -331,29 +295,10 @@ def save_emp_edit():
 @app.route('/emp_delete', methods=['GET','POST'])
 def emp_delete():
     emp_id = request.form.get("emp_delete","")
-
-    try:
-        cnx, cursor = db.get_connection()
-        emp_query = execute_emp_query()
-        cursor.execute(emp_query)
-
-        delete_emp = "DELETE FROM emp WHERE emp_id = '{}';".format(emp_id)
-        cursor.execute(delete_emp)
-
-        delete_image = "DELETE FROM image WHERE emp_id = '{}';".format(emp_id)
-        cursor.execute(delete_image)
-        cnx.commit()
-
-    except mysql.connector.Error as err:
-        printError(err)
-        flash("データの削除に失敗しました","failed")
-        return render_template("emp_result.html")
-    else:
-        cnx.close()
+    db.execute_emp_delete(emp_id)
     
     flash("データの削除に成功しました","success")
     return render_template("emp_result.html")
-    #return render_template("emp_info.html", emp=emp)
 
 #CSV出力
 @app.route('/csv', methods=['GET','POST'])
@@ -411,18 +356,7 @@ def emp_search_result():
 #部署データ一覧
 @app.route('/de_info', methods=['GET','POST'])
 def de_info():
-    try:
-        cnx, cursor = db.get_connection()
-
-        query = 'SELECT department_id, department FROM department;'
-        cursor.execute(query)
-
-        departments = get_department_info(cursor)
-
-    except mysql.connector.Error as err:
-        printError(err)
-    else:
-        cnx.close()
+    departments = db.show_de_info()
     return render_template("de_info.html",departments=departments)
 
 #部署データ新規追加
@@ -465,17 +399,8 @@ def de_add():
 def de_edit():
     department_id = request.form.get("de_edit","")
     new_department = request.form.get("new_department","")
-    
-    try:
-        cnx, cursor = db.get_connection()
-        query = 'SELECT department_id, department FROM department WHERE department_id = {};'.format(department_id)
-        cursor.execute(query)
-        departments = get_department_info(cursor)
 
-    except mysql.connector.Error as err:
-        printError(err)
-    else:
-        cnx.close()
+    departments = db.show_de_edit(department_id)
 
     return render_template("de_edit.html", departments=departments)
 
@@ -515,21 +440,7 @@ def save_de_edit():
 @app.route('/de_delete', methods=['GET','POST'])
 def de_delete():
     department_id = request.form.get("de_delete","")
-    
-    try:
-        cnx, cursor = db.get_connection()
-        query = 'SELECT department_id, department FROM department;'
-        cursor.execute(query)
-
-        delete_department = 'DELETE FROM department WHERE department_id = {};'.format(department_id)
-        cursor.execute(delete_department)
-        cnx.commit()
-
-    except mysql.connector.Error as err:
-        printError(err)
-        flash("データを削除することができませんでした。","failed")
-    else:
-        cnx.close()
+    db.execute_de_delete(department_id)
 
     flash("データの削除に成功しました","success")
     return render_template("de_result.html")
