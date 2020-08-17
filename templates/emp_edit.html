@@ -122,7 +122,7 @@
     <h3>社員情報を入力してください。</h3>
     
     <section>
-        <form method="post" enctype="multipart/form-data" action="">
+        <form method="post" enctype="multipart/form-data" action="/save_emp_add">
             <p>社員ID：<input type="text" name="emp_id" value="emp"><br>
                 ※emp+数字4桁
             </p>
@@ -212,7 +212,9 @@
                 ※YYYY-MM-DDの形で記入してください</p>
 
             <div><input type="submit" name="emp_setting" value="設定"></div>
-            <div><input type="submit" name="emp_cancel" formaction="emp_info" value="キャンセル"></div>
+        </form>
+        <form method="post" enctype="multipart/form-data" action="/emp_info">
+            <div><input type="submit" name="emp_cancel" value="キャンセル"></div>
         </form>
     </section>
     {% endif %}
