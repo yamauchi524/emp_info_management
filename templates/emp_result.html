@@ -3,23 +3,9 @@
 <head>
     <meta charset="utf-8">
     <title>更新結果</title>
-    <style>
-        li {
-            margin-left: -50px;
-            border-bottom: 0.5px solid white;
-            width: 100vw;
-            color: white;
-            padding-left: 10px;
-        }
-        .success {
-            background-color: lightseagreen;
-        }
-        .failed {
-            background-color: deeppink;
-        }
-        </style>
-    </head>
+    <link rel="stylesheet" href="../static/css/result.css">
 </head>
+
 <body>
     <h2>社員情報更新結果</h2>
     {% with messages = get_flashed_messages(with_categories=true) %}
