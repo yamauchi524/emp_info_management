@@ -28,10 +28,10 @@
 
             <p>写真：</p>
             <img src="static/images/{{data.image}}" height="200">
-            <p><input type="file" name="image" value="{{data.image}}" accept="image/jpeg,image/png"></p>
+            <p><input type="file" name="image" value="{{data.image}}" accept="image/jpeg,image/png">
             <!-- <input type="hidden" name="image" value="{{data.image}}"> -->
             <input type="hidden" name="image_id" value="{{data.image_id}}">
-            <div>※アップロード可能なファイル形式は「JPEG」「PNG」のみ</div>
+            <div>※画像に変更がない場合もファイルを選択してください。</div></p>
 
             <p>郵便番号：<input type="text" name="postal_code" value="{{data.postal_code}}"><br>
             ※ハイフンを入れて入力してください。（例）100-1000</p>
@@ -90,8 +90,8 @@
                 </select>
             </p>
 
-            <p>住所：<input type="text" name="address" value="{{data.address}}"></p>
-            <dev>※市区町村以下を記入してください。</dev>
+            <p>住所：<input type="text" name="address" value="{{data.address}}"><br>
+            <dev>※市区町村以下を記入してください。</dev></p>
 
             <p>所属：
                 

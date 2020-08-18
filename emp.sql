@@ -28,5 +28,6 @@ CREATE TABLE emp(
     PRIMARY KEY(emp_id)
 );
 
-insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date) values('emp0001','田中太郎', 24, '男', '7we4CMGj','100-1000','東京都','千代田区', 1, '2020/4/1');
-insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date) values('emp0002','日本花子', 27, '女', 'woccb8Vn','200-2000','埼玉県','さいたま市', 2, '2017/4/1');
+insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date,leave_date) values('emp0001','田中太郎', 24, '男', '7we4CMGj','100-1000','東京都','千代田区', 1, '2020-04-01','9999-03-31');
+insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date,leave_date) values('emp0002','日本花子', 27, '女', 'woccb8Vn','200-2000','埼玉県','さいたま市', 2, '2017-04-01','9999-03-31');
+insert into emp(emp_id,name,age,gender,image_id,postal_code,pref,address,department_id,join_date,leave_date) values('emp0003','東京次郎', 32, '男', 'QvNBr6Xb', '300-3000','神奈川県','川崎市', 3, '2020-04-01','9999-03-31');

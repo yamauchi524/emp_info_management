@@ -14,5 +14,6 @@ CREATE TABLE image(
     image_update_date DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-insert into image(image_id, image) value('7we4CMGj', './static/man04.png');
-insert into image(image_id, image) value('woccb8Vn', './static/woman01.png');
+insert into image(image_id, image) value('7we4CMGj', 'woman01.png');
+insert into image(image_id, image) value('woccb8Vn', 'man04.png');
+insert into image(image_id, image) value('QvNBr6Xb', 'man1.png');
